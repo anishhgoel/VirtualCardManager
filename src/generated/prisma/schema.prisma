@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// This Prisma schema defines the database structure for cards, authorizations, and rules
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  id             String          @id @default(cuid())
+  cardholderId   String
+  stripeId       String          @unique
+  status         String
+  description    String?
+  last4          String?
+  createdAt      DateTime        @default(now())
+  authorizations Authorization[]
+  rules          Rule[]
+}
+
+model Authorization {
+  id          String   @id @default(cuid())
+  stripeId    String   @unique
+  card        Card     @relation(fields: [cardId], references: [id])
+  cardId      String
+  amountCents Int
+  currency    String
+  merchant    String
+  decision    String // APPROVED, DECLINED, PENDING
+  createdAt   DateTime @default(now())
+  raw         Json
+}
+
+model Rule {
+  id                String         @id @default(cuid())
+  card              Card           @relation(fields: [cardId], references: [id])
+  cardId            String
+  type              RuleType
+  // Spend limit
+  spendLimitCents   Int?
+  spendInterval     SpendInterval?
+  // Merchant/category allow/block (store as comma-separated or JSON string)
+  merchantAllowList String? // comma-separated or JSON string
+  merchantBlockList String?
+  categoryAllowList String?
+  categoryBlockList String?
+  // Time window (store as comma-separated or JSON string)
+  allowedWeekdays   String? // e.g. "Monday,Tuesday" or JSON string
+  allowedHourStart  Int? // 0-23
+  allowedHourEnd    Int? // 0-23
+  createdAt         DateTime       @default(now())
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String
+  email        String   @unique
+  password     String
+  cardholderId String   @unique
+  name         String?
+  createdAt    DateTime @default(now())
+}
+
+enum RuleType {
+  SPEND_LIMIT
+  MERCHANT_CATEGORY
+  TIME_WINDOW
+}
+
+enum SpendInterval {
+  DAILY
+  MONTHLY
+  LIFETIME
+}

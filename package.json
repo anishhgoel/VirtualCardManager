@@ -1,0 +1,37 @@
+{
+  "name": "virtualcard",
+  "version": "1.0.0",
+  "description": "Virtual Card Management System with Stripe Integration",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc && cp -r src/generated dist/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "virtual-card",
+    "stripe",
+    "issuing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.7.0",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "prisma": "^6.7.0",
+    "sqlite3": "^5.1.7",
+    "stripe": "^14.25.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.17.46",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
+}
